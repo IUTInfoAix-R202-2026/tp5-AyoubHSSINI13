@@ -74,6 +74,18 @@ public class SiteDao {
 
     // TODO exercice 4 : insérer le site.
     //
+
+    try (Connection connexion = source.getConnection();
+        PreparedStatement ps = connexion.prepareStatement(sql)) {
+      ps.setString(1, site.numeroCarre());
+      ps.setString(2, site.nomConvivial());
+      ps.setString(3, site.protocole());
+      ps.setString(4, site.commentaire());
+      ps.setString(5, site.dateCreation());
+      ps.executeUpdate(); // pas executeQuery : renvoie le nombre de lignes touchées
+    } catch (SQLException e) {
+      throw new DataAccessException("Impossible d'insérer le site", e);
+    }
     // - ouvrir une connexion + préparer la requête ;
     // - lier les 5 paramètres dans l'ordre des colonnes (setString) ;
     // - exécuter avec executeUpdate() ;
@@ -86,14 +98,32 @@ public class SiteDao {
         "UPDATE site SET nom_convivial = ?, protocole = ?, commentaire = ?, date_creation = ?"
             + " WHERE numero_carre = ?";
 
+    try (Connection connexion = source.getConnection();
+        PreparedStatement ps = connexion.prepareStatement(sql)) {
+      ps.setString(1, site.nomConvivial());
+      ps.setString(2, site.protocole());
+      ps.setString(3, site.commentaire());
+      ps.setString(4, site.dateCreation());
+      ps.setString(5, site.numeroCarre());
+      ps.executeUpdate(); // pas executeQuery : renvoie le nombre de lignes touchées
+    } catch (SQLException e) {
+      throw new DataAccessException("Impossible de mettre à jour le site", e);
+    }
     // TODO exercice 4 : mettre à jour le site (mêmes étapes, executeUpdate).
-    // Attention à l'ordre des paramètres : le numero_carre est le DERNIER (clause WHERE).
+    // Attention à l'ordre des paramètres : le numero_carre est le DERNIER (clause
+    // WHERE).
   }
 
   /** Supprime le site identifié par son numéro de carré. */
   public void delete(String numeroCarre) {
     String sql = "DELETE FROM site WHERE numero_carre = ?";
-
+    try (Connection connexion = source.getConnection();
+        PreparedStatement ps = connexion.prepareStatement(sql)) {
+      ps.setString(1, numeroCarre);
+      ps.executeUpdate(); // pas executeQuery : renvoie le nombre de lignes touchées
+    } catch (SQLException e) {
+      throw new DataAccessException("Impossible de supprimer le site " + numeroCarre, e);
+    }
     // TODO exercice 4 : supprimer le site (PreparedStatement + executeUpdate).
   }
 
